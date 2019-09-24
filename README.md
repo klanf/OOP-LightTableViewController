@@ -149,8 +149,8 @@ self.tableView.dataSource = self.arrayDataSource;
 ```
   以上就完成来基于面向协议编程写一个更轻量化的ViewController的代码
   
-  参考：
-  [简书：iOS多种类型的cell处理方案](https://www.jianshu.com/p/1d027d45565d)
+  参考：<br>
+  [简书：iOS多种类型的cell处理方案](https://www.jianshu.com/p/1d027d45565d)<br>
   [Objc-中国 更轻量的 View Controllers](https://objccn.io/issue-1-1/)
 
 
