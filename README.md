@@ -58,7 +58,7 @@ self.tableView.dataSource = self.arrayDataSource;
 - (void)configureCell:(PhotoCell*)cell withItem:(Photo*)item {
     
     //设置cell的属性
-    cell.text = item.xxx;
+    cell.label.text = item.xxx;
     ...
 }
 ```
@@ -66,6 +66,92 @@ self.tableView.dataSource = self.arrayDataSource;
 
   不过，在存在多个cell的情况下，免不了写大量的 if-else 判断代码，在此引入一个面向协议编程的方法，即根据model来对应cell，cell面向model开发<br>
   
+  先定义一个 ModelConfigProtocol 协议接口
+  ```
+@protocol ModelConfigProtocol <NSObject>
+
+@required
+ 
+ 获取 cell 的复用标识
+ 
+- (nullable NSString*)cellReuseIdentifier;
+ 
+ 获取 cell 的类型
+ 
+- (NSString *)cellType;
+
+
+@optional
+ 
+ 获取 cell 的高度
+ 
+ @return 高度
+
+- (CGFloat)cellHeightWithindexPath:(NSIndexPath*)indexPath;
+
+@end
+  ```
+  然后定义一个准守该协议的BaseModel,并实现该协议的方法
+  ```
+  @implementation BaseModel
+
+//实现协议方法
+
+- (nullable NSString*)cellReuseIdentifier {
+    
+    return @"reuseIdentifier";
+}
+
+- (NSString *)cellType {
+    
+    return @"BaseCell";
+}
+  
+  ```
+  然后对 ArrayDataSource 的 tableView:cellForRowAtIndexPath: 方法做点改动
+  ```
+  - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    id<ModelConfigProtocol> item = [self itemAtIndexPath:indexPath];
+    
+    id cell = [tableView dequeueReusableCellWithIdentifier:[item cellReuseIdentifier] forIndexPath:indexPath];
+    
+    if ([self.delegate respondsToSelector:@selector(configureCell:withItem:)]) {
+        [self.delegate configureCell:cell withItem:item];
+    }
+    
+    return cell;
+}
+  ```
+ 
+   在 cell 中定义 id<ModelConfigProtocol> model 属性接收数据，接收数据可以这么写
+```
+- (void)setModel:(id)model {
+    
+    BaseModel *baseModel = model;
+    self.textLabel.text = baseModel.text;
+}
+
+```
+ 
+  在 ViewController 里赋值的代码可以这样写
+```
+#pragma mark - ArrayDataSourceDelegate
+- (void)configureCell:(id)cell withItem:(id<ModelConfigProtocol>)item {
+    
+    //设置cell的属性
+    if ([[item cellType] isEqualToString:@"BaseCell"]) {
+        [((BaseCell *)cell) setModel:item];
+    } else if ([[item cellType] isEqualToString:@"BaseCell2"]) {
+        [((BaseCell2 *)cell) setModel:item];
+    }
+}
+```
+  以上就完成来基于面向协议编程写一个更轻量化的ViewController的代码
+  
+  参考：
+  [简书：iOS多种类型的cell处理方案](https://www.jianshu.com/p/1d027d45565d)
+  [Objc-中国 更轻量的 View Controllers](https://objccn.io/issue-1-1/)
 
 
 
