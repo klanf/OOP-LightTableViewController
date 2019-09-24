@@ -1,6 +1,7 @@
 # OOP-LightTableViewController
 基于面向协议编程写一个更轻量化的ViewController
 
+## 更轻量化的ViewController
   相信我们都写过很多又臭又长的 UITableViewDataSource 代码，而如果把 UITableViewDataSource 的代码提取出来放到一个单独的类中不失为一种简化代码的
   手段，如将下面的代码
 ```
@@ -63,6 +64,8 @@ self.tableView.dataSource = self.arrayDataSource;
 }
 ```
   在不复杂的业务里面，data source可能确实看上去只是一个数组而已，每次你想把这个数组显示到一个 table view 中时，你都可以复用这些代码。
+  
+## 面向协议开发
 
   不过，在存在多个cell的情况下，免不了写大量的 if-else 判断代码，在此引入一个面向协议编程的方法，即根据model来对应cell，cell面向model开发<br>
   
